@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Auto-hide success messages after 5 seconds
     if (type === "success") {
       setTimeout(() => {
-        statusMessage.classList.add("hidden")
+        statusMessage.classList.add("HiDDEN")
       }, 5000)
     }
   }
