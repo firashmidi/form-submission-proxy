@@ -5,6 +5,7 @@ import fetch from "node-fetch"
 const DEBUG = true
 
 // Use test mode to avoid hitting the actual Power Automate endpoint during testing
+// Set this to false when you have a real Power Automate URL
 const TEST_MODE = false
 
 // CORS middleware handler
@@ -33,6 +34,14 @@ export default async function handler(req, res) {
   try {
     console.log("Received form data:", req.body)
 
+    // Extract the form data directly - no additional formatting
+    const { name, email, phone, message } = req.body
+
+    // This is the exact format Power Automate expects
+    const powerAutomateData = { name, email, phone, message }
+
+    console.log("Data for Power Automate:", powerAutomateData)
+
     if (TEST_MODE) {
       // Simulate a successful response in test mode
       console.log("TEST MODE: Simulating successful Power Automate response")
@@ -43,16 +52,22 @@ export default async function handler(req, res) {
       return res.json({
         success: true,
         message: "Form submitted successfully (TEST MODE)",
-        data: { id: "test-123", timestamp: new Date().toISOString() },
+        data: {
+          id: "test-123",
+          timestamp: new Date().toISOString(),
+          formattedData: powerAutomateData,
+        },
       })
     }
 
     // Replace with your actual Power Automate endpoint URL
+    // Example: https://prod-123.westus.logic.azure.com:443/workflows/abc123def456/triggers/manual/paths/invoke
     const powerAutomateUrl =
-      "https://prod-XX.westus.logic.azure.com:443/workflows/YOUR_WORKFLOW_ID/triggers/manual/paths/invoke"
+      "https://prod-03.northeurope.logic.azure.com:443/workflows/9f5e7c302eaf46f796d199a196ae0607/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ErimU_C1pFNYydz2O4_Tmq3F1Hhml-kDJZzJcmbYixY"
 
     if (DEBUG) {
       console.log(`Sending request to Power Automate: ${powerAutomateUrl}`)
+      console.log(`Request body: ${JSON.stringify(powerAutomateData)}`)
     }
 
     const response = await fetch(powerAutomateUrl, {
@@ -60,7 +75,7 @@ export default async function handler(req, res) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(powerAutomateData),
     })
 
     if (!response.ok) {
