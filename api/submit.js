@@ -5,7 +5,7 @@ import fetch from "node-fetch"
 const DEBUG = true
 
 // Use test mode to avoid hitting the actual Power Automate endpoint during testing
-const TEST_MODE = true
+const TEST_MODE = false
 
 // CORS middleware handler
 const corsHandler = cors({
